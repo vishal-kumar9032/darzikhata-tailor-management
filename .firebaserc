@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "test-social-media-520b7"
+  },
+  "targets": {
+    "test-social-media-520b7": {
+      "hosting": {
+        "ashatailor": [
+          "ashatailor"
+        ],
+        "ashadevi": [
+          "ashadevi"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

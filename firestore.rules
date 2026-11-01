@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if authenticated user is one of the allowed admin emails
+    function isAdmin() {
+      return request.auth != null && 
+        (request.auth.token.email == 'vishalkumar9032374977@gmail.com' || 
+         request.auth.token.email == 'ashadevi903237@gmail.com');
+    }
+
+    // Customers can look up their orders by phone number
+    // Only authorized admins can create, edit, or delete orders
+    match /orders/{orderId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Customer measurements and profiles
+    match /customers/{customerId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Shop settings
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
