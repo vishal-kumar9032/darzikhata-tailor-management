@@ -17,17 +17,8 @@ import { FirebaseConfig } from '../types';
 
 const STORAGE_KEY = 'tailor_firebase_config';
 
-export const DEFAULT_REAL_CONFIG: FirebaseConfig = {
-  apiKey: "AIzaSyAK-cMEP-MtIge8yK7O3Yxz9BCwcbYeseM",
-  authDomain: "test-social-media-520b7.firebaseapp.com",
-  projectId: "test-social-media-520b7",
-  storageBucket: "test-social-media-520b7.firebasestorage.app",
-  messagingSenderId: "667398861496",
-  appId: "1:667398861496:web:6b8620911c78c7938b7a4d",
-};
-
 export function getStoredFirebaseConfig(): FirebaseConfig | null {
-  // 1. Try env vars first
+  // 1. Try env vars first (from .env)
   const envConfig: FirebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
@@ -41,7 +32,7 @@ export function getStoredFirebaseConfig(): FirebaseConfig | null {
     return envConfig;
   }
 
-  // 2. Try localStorage config saved by user in settings
+  // 2. Try localStorage config saved by user
   const local = localStorage.getItem(STORAGE_KEY);
   if (local) {
     try {
@@ -54,8 +45,7 @@ export function getStoredFirebaseConfig(): FirebaseConfig | null {
     }
   }
 
-  // 3. Fallback to default real credentials
-  return DEFAULT_REAL_CONFIG;
+  return null;
 }
 
 export function saveFirebaseConfig(config: FirebaseConfig) {
@@ -93,6 +83,7 @@ export const isFirebaseConfigured = Boolean(app && auth && db);
 export const ALLOWED_ADMIN_EMAILS = [
   'vishalkumar9032374977@gmail.com',
   'ashadevi903237@gmail.com',
+  'anjalikumari903237@gmail.com',
 ];
 
 export function isEmailAuthorized(email: string | null | undefined): boolean {
@@ -104,18 +95,18 @@ export function isEmailAuthorized(email: string | null | undefined): boolean {
 const googleProvider = new GoogleAuthProvider();
 
 export async function loginWithGoogle(): Promise<User | null> {
-  if (!auth) throw new Error("Firebase Auth is not configured yet. Configure it in Settings.");
+  if (!auth) throw new Error("Firebase Auth is not configured yet.");
   const result = await signInWithPopup(auth, googleProvider);
   if (!isEmailAuthorized(result.user.email)) {
     await fbSignOut(auth);
-    throw new Error(`Access Denied: ${result.user.email} is not authorized. Only vishalkumar9032374977@gmail.com and ashadevi903237@gmail.com have admin access.`);
+    throw new Error(`Access Denied: ${result.user.email} is not authorized. Only vishalkumar9032374977@gmail.com, ashadevi903237@gmail.com, and anjalikumari903237@gmail.com have admin access.`);
   }
   return result.user;
 }
 
 export async function loginWithEmail(email: string, pass: string): Promise<User | null> {
   if (!isEmailAuthorized(email)) {
-    throw new Error(`Access Denied: Only authorized tailors (vishalkumar9032374977@gmail.com, ashadevi903237@gmail.com) can sign in.`);
+    throw new Error(`Access Denied: Only authorized tailors (vishalkumar9032374977@gmail.com, ashadevi903237@gmail.com, anjalikumari903237@gmail.com) can sign in.`);
   }
   if (!auth) throw new Error("Firebase Auth is not configured yet.");
   const result = await signInWithEmailAndPassword(auth, email, pass);

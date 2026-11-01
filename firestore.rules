@@ -5,7 +5,8 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null && 
         (request.auth.token.email == 'vishalkumar9032374977@gmail.com' || 
-         request.auth.token.email == 'ashadevi903237@gmail.com');
+         request.auth.token.email == 'ashadevi903237@gmail.com' ||
+         request.auth.token.email == 'anjalikumari903237@gmail.com');
     }
 
     // Customers can look up their orders by phone number

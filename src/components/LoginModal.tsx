@@ -67,7 +67,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setError('');
     try {
       if (!isEmailAuthorized(email)) {
-        throw new Error(`Access Denied: ${email} is not authorized. Only vishalkumar9032374977@gmail.com and ashadevi903237@gmail.com can log in.`);
+        throw new Error(`Access Denied: ${email} is not authorized. Only vishalkumar9032374977@gmail.com, ashadevi903237@gmail.com, and anjalikumari903237@gmail.com can log in.`);
       }
 
       if (isFirebaseConfigured) {
@@ -124,8 +124,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             <span>Authorized Admin Accounts:</span>
           </div>
           <ul className="text-[11px] text-slate-600 space-y-0.5 list-disc list-inside">
-            <li className="font-medium">vishalkumar9032374977@gmail.com</li>
             <li className="font-medium">ashadevi903237@gmail.com</li>
+            <li className="font-medium">anjalikumari903237@gmail.com</li>
+            <li className="font-medium">vishalkumar9032374977@gmail.com</li>
           </ul>
         </div>
 
@@ -202,16 +203,24 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           {/* 1-Tap Quick Authorized Admin buttons */}
           <div className="pt-2 border-t border-slate-100 space-y-1.5 text-center">
             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
-              1-Tap Fast Login for Owners:
+              1-Tap Fast Login for Admins:
             </span>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
               <button
                 type="button"
                 onClick={() => handleSelectAuthorizedAdmin('ashadevi903237@gmail.com')}
                 className="py-1.5 px-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] truncate border border-rose-200"
-                title="Asha Devi (Mother)"
+                title="Asha Devi"
               >
                 👩‍💼 Asha Devi
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectAuthorizedAdmin('anjalikumari903237@gmail.com')}
+                className="py-1.5 px-2 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-800 font-bold text-[11px] truncate border border-pink-200"
+                title="Anjali Kumari"
+              >
+                👩‍💼 Anjali Kumari
               </button>
               <button
                 type="button"
