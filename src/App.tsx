@@ -6,7 +6,6 @@ import { CustomerDirectory } from './components/CustomerDirectory';
 import { UdharRegister } from './components/UdharRegister';
 import { OrderFormModal } from './components/OrderFormModal';
 import { PaymentModal } from './components/PaymentModal';
-import { SettingsModal } from './components/SettingsModal';
 import { LoginModal } from './components/LoginModal';
 import { OrderRecord, OrderStatus, ShopSettings } from './types';
 import { StorageService } from './services/storageService';
@@ -27,7 +26,6 @@ export function App() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<OrderRecord | null>(null);
   const [paymentModalOrder, setPaymentModalOrder] = useState<OrderRecord | null>(null);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // Pre-fill for new order from customer directory
@@ -150,7 +148,6 @@ export function App() {
         adminEmail={adminEmail}
         onOpenLogin={() => setIsLoginModalOpen(true)}
         onLogout={handleLogout}
-        onOpenSettings={() => setIsSettingsModalOpen(true)}
         settings={settings}
       />
 
@@ -234,16 +231,6 @@ export function App() {
         onClose={() => setPaymentModalOrder(null)}
         onPaymentSuccess={() => loadAllOrders()}
         settings={settings}
-      />
-
-      <SettingsModal
-        isOpen={isSettingsModalOpen}
-        onClose={() => setIsSettingsModalOpen(false)}
-        settings={settings}
-        onSaveSettings={(newSettings) => {
-          StorageService.saveSettings(newSettings);
-          setSettings(newSettings);
-        }}
       />
 
       <LoginModal

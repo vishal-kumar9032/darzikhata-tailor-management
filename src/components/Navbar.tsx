@@ -1,17 +1,11 @@
 import React from 'react';
 import { 
   Scissors, 
-  UserCheck, 
   LogIn, 
   LogOut, 
-  Settings as SettingsIcon, 
-  Search, 
-  Database,
-  Layers,
-  Sparkles
+  Search 
 } from 'lucide-react';
 import { ShopSettings } from '../types';
-import { isFirebaseConfigured } from '../services/firebase';
 
 interface NavbarProps {
   currentTab: 'customer' | 'admin' | 'customers_dir' | 'udhar';
@@ -20,7 +14,6 @@ interface NavbarProps {
   adminEmail: string | null;
   onOpenLogin: () => void;
   onLogout: () => void;
-  onOpenSettings: () => void;
   settings: ShopSettings;
 }
 
@@ -31,7 +24,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   adminEmail,
   onOpenLogin,
   onLogout,
-  onOpenSettings,
   settings,
 }) => {
   return (
@@ -61,20 +53,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Navigation & Admin controls */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Status indicator */}
-            <div 
-              onClick={onOpenSettings} 
-              title={isFirebaseConfigured ? "Connected to live Firebase Firestore" : "Running in Local Mode (Click to connect Firebase)"}
-              className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors border ${
-                isFirebaseConfigured 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
-                  : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
-              }`}
-            >
-              <span className={`w-2 h-2 rounded-full ${isFirebaseConfigured ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span>{isFirebaseConfigured ? 'Firebase Live' : 'Local Storage Mode'}</span>
-            </div>
-
             {/* View Mode Switcher Button */}
             {isAdmin ? (
               <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
@@ -115,16 +93,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>Customer Lookup</span>
               </button>
             )}
-
-            {/* Settings button */}
-            <button
-              type="button"
-              onClick={onOpenSettings}
-              className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
-              title="Shop & Database Settings"
-            >
-              <SettingsIcon className="w-4 h-4" />
-            </button>
 
             {/* Admin Login / Logout button */}
             {isAdmin ? (
