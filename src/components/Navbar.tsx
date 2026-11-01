@@ -3,7 +3,8 @@ import {
   Scissors, 
   LogIn, 
   LogOut, 
-  Search 
+  Search,
+  User
 } from 'lucide-react';
 import { ShopSettings } from '../types';
 
@@ -26,54 +27,70 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
   settings,
 }) => {
+  const getInitials = (email: string | null) => {
+    if (!email) return 'AD';
+    if (email.startsWith('ashadevi')) return 'AD';
+    if (email.startsWith('anjalikumari')) return 'AK';
+    if (email.startsWith('vishalkumar')) return 'VK';
+    return email.slice(0, 2).toUpperCase();
+  };
+
+  const getAdminDisplayName = (email: string | null) => {
+    if (!email) return 'Admin';
+    if (email.startsWith('ashadevi')) return 'Asha Devi';
+    if (email.startsWith('anjalikumari')) return 'Anjali Kumari';
+    if (email.startsWith('vishalkumar')) return 'Vishal Kumar';
+    return email.split('@')[0];
+  };
+
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-stone-200/70 transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo & Name */}
           <div 
-            className="flex items-center gap-3 cursor-pointer select-none"
+            className="flex items-center gap-3 cursor-pointer select-none group"
             onClick={() => setCurrentTab(isAdmin ? 'admin' : 'customer')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 via-pink-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-rose-500/20">
-              <Scissors className="w-5 h-5 -rotate-45" />
+            <div className="w-9 h-9 rounded-xl bg-stone-900 group-hover:bg-rose-600 transition-colors flex items-center justify-center text-white shadow-xs">
+              <Scissors className="w-4 h-4 -rotate-45" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg tracking-tight text-slate-900">
+                <span className="font-bold text-base sm:text-lg tracking-tight text-stone-900">
                   {settings.shopName}
                 </span>
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60">
+                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-100 text-stone-600 border border-stone-200">
                   Tailor Pro
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-medium">Digital Khata & Order Records</p>
+              <p className="text-[11px] text-stone-500 font-medium tracking-tight">Order & Dues Management</p>
             </div>
           </div>
 
-          {/* Right Navigation & Admin controls */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right Controls */}
+          <div className="flex items-center gap-2.5">
             {/* View Mode Switcher Button */}
             {isAdmin ? (
-              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <div className="flex items-center bg-stone-100/80 p-0.5 rounded-xl border border-stone-200/80 text-xs font-semibold">
                 <button
                   type="button"
                   onClick={() => setCurrentTab('admin')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
                     currentTab === 'admin' || currentTab === 'customers_dir' || currentTab === 'udhar'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white text-stone-900 shadow-xs'
+                      : 'text-stone-500 hover:text-stone-800'
                   }`}
                 >
-                  Admin Portal
+                  Admin
                 </button>
                 <button
                   type="button"
                   onClick={() => setCurrentTab('customer')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
                     currentTab === 'customer'
                       ? 'bg-white text-rose-600 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      : 'text-stone-500 hover:text-stone-800'
                   }`}
                 >
                   Customer View
@@ -83,37 +100,42 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => setCurrentTab('customer')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                   currentTab === 'customer'
-                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-rose-50 text-rose-700 border border-rose-200/70'
+                    : 'text-stone-600 hover:text-stone-900'
                 }`}
               >
                 <Search className="w-3.5 h-3.5" />
-                <span>Customer Lookup</span>
+                <span>Customer Portal</span>
               </button>
             )}
 
             {/* Admin Login / Logout button */}
             {isAdmin ? (
-              <div className="flex items-center gap-2 pl-1 border-l border-slate-200">
-                <span className="hidden lg:inline text-xs font-medium text-slate-600 truncate max-w-[120px]">
-                  {adminEmail || 'Admin'}
-                </span>
+              <div className="flex items-center gap-2 pl-1 border-l border-stone-200">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center border border-rose-200">
+                    {getInitials(adminEmail)}
+                  </div>
+                  <span className="hidden md:inline text-xs font-semibold text-stone-700 max-w-[110px] truncate">
+                    {getAdminDisplayName(adminEmail)}
+                  </span>
+                </div>
                 <button
                   type="button"
                   onClick={onLogout}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/60 rounded-xl transition-colors"
+                  className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+                  title="Logout"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Logout</span>
                 </button>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={onOpenLogin}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-xs transition-colors"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-stone-900 hover:bg-stone-800 rounded-xl transition-all shadow-xs cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span>Admin Login</span>

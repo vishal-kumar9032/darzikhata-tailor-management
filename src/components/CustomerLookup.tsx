@@ -5,15 +5,15 @@ import {
   Calendar, 
   CheckCircle2, 
   Clock, 
-  AlertCircle, 
   Receipt, 
   QrCode, 
   MessageSquare, 
-  CreditCard, 
-  ChevronRight,
-  ShieldCheck,
   Sparkles,
-  Scissors
+  Scissors,
+  ArrowRight,
+  ShieldCheck,
+  Copy,
+  Check
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { OrderRecord, ShopSettings } from '../types';
@@ -29,8 +29,8 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({ settings, onAdmi
   const [searched, setSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<OrderRecord | null>(null);
   const [showQrModal, setShowQrModal] = useState<OrderRecord | null>(null);
+  const [copiedUpi, setCopiedUpi] = useState(false);
 
   // Check URL query parameters for ?phone=...
   useEffect(() => {
@@ -56,11 +56,6 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({ settings, onAdmi
     try {
       const results = await StorageService.getOrdersByPhone(clean);
       setOrders(results);
-      if (results.length > 0) {
-        setSelectedOrder(results[0]);
-      } else {
-        setSelectedOrder(null);
-      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -68,30 +63,36 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({ settings, onAdmi
     }
   };
 
+  const copyUpiId = () => {
+    navigator.clipboard.writeText(settings.upiId);
+    setCopiedUpi(true);
+    setTimeout(() => setCopiedUpi(false), 2000);
+  };
+
   const getStatusBadge = (status: OrderRecord['status']) => {
     switch (status) {
       case 'received':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-            <Clock className="w-3.5 h-3.5" /> Order Received
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200">
+            <Clock className="w-3.5 h-3.5 text-stone-500" /> Received
           </span>
         );
       case 'in_progress':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-            <Scissors className="w-3.5 h-3.5" /> Stitching in Progress
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <Scissors className="w-3.5 h-3.5 text-amber-600" /> In Stitching
           </span>
         );
       case 'ready_for_pickup':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 animate-pulse">
-            <Sparkles className="w-3.5 h-3.5" /> Ready for Pickup!
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> Ready for Pickup
           </span>
         );
       case 'delivered':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Completed & Delivered
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-stone-100 text-stone-600">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Delivered
           </span>
         );
     }
@@ -101,47 +102,46 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({ settings, onAdmi
   const totalBalanceDue = orders.reduce((sum, o) => sum + (o.status !== 'delivered' || o.balanceDue > 0 ? o.balanceDue : 0), 0);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      {/* Hero Welcome Card */}
-      <div className="bg-gradient-to-br from-rose-600 via-rose-700 to-indigo-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-rose-900/10 mb-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-medium text-rose-100 mb-4 border border-white/20">
+    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+      {/* Search Header Container */}
+      <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-xs mb-8 text-center relative overflow-hidden">
+        <div className="max-w-xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-100 text-rose-700 text-xs font-semibold">
             <Scissors className="w-3.5 h-3.5" />
-            <span>{settings.shopName} Online Portal</span>
+            <span>{settings.shopName}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
-            Check Your Stitching Records & Bills
+
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">
+            Customer Stitching & Dues Lookup
           </h1>
-          <p className="text-rose-100 text-sm sm:text-base max-w-xl font-normal opacity-95">
-            Enter your mobile number to view what items you have given, stitching status, payments cleared, and balance dues.
+          <p className="text-stone-500 text-xs sm:text-sm font-normal">
+            Enter your 10-digit mobile number to view your clothes, stitching status, advance paid, and remaining balance.
           </p>
 
-          {/* Search Input Box */}
+          {/* Clean Input Form */}
           <form 
             onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-            className="mt-6 flex flex-col sm:flex-row gap-2"
+            className="pt-4 flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
           >
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <span className="text-xs font-bold text-slate-500 mr-1">+91</span>
-                <Phone className="w-4 h-4 text-slate-400" />
-              </div>
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-stone-400">
+                +91
+              </span>
               <input
                 type="tel"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                placeholder="Enter 10-digit mobile number (e.g. 9876500001)"
-                className="w-full pl-16 pr-4 py-3.5 rounded-2xl bg-white text-slate-900 placeholder-slate-400 font-medium text-base shadow-inner focus:outline-none focus:ring-4 focus:ring-rose-400/40"
+                placeholder="10-digit mobile number"
+                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-stone-50 border border-stone-200 text-stone-900 placeholder-stone-400 font-medium text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
               />
             </div>
             <button
               type="submit"
               disabled={isLoading || phoneNumber.length < 10}
-              className="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 font-bold rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              className="px-6 py-3 bg-stone-900 hover:bg-stone-800 disabled:opacity-40 text-white font-semibold text-xs sm:text-sm rounded-2xl transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
-              <Search className="w-5 h-5" />
-              <span>{isLoading ? 'Searching...' : 'Find My Records'}</span>
+              <Search className="w-4 h-4" />
+              <span>{isLoading ? 'Searching...' : 'View Records'}</span>
             </button>
           </form>
         </div>
@@ -149,54 +149,48 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({ settings, onAdmi
 
       {/* Results Section */}
       {searched && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in duration-200">
           {orders.length === 0 ? (
-            <div className="bg-white rounded-3xl p-8 text-center border border-slate-200/80 shadow-xs">
-              <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Receipt className="w-8 h-8" />
+            <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-stone-200/80 shadow-xs">
+              <div className="w-14 h-14 bg-stone-100 text-stone-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Receipt className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-1">No Records Found</h3>
-              <p className="text-slate-500 text-sm max-w-md mx-auto mb-6">
-                We couldn't find any orders matching mobile number <span className="font-semibold text-slate-700">+91 {phoneNumber}</span>. 
-                Please verify the number or contact the shop.
+              <h3 className="text-base font-bold text-stone-900">No Orders Found</h3>
+              <p className="text-stone-500 text-xs sm:text-sm max-w-sm mx-auto mt-1 mb-6">
+                No orders found under mobile number <span className="font-semibold text-stone-800">+91 {phoneNumber}</span>.
               </p>
-              <div className="flex justify-center gap-3">
-                <a
-                  href={`https://wa.me/91${settings.shopPhone}?text=Hi,%20I%20am%20checking%20my%20tailoring%20records%20for%20mobile%20${phoneNumber}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors shadow-xs"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>WhatsApp Shop</span>
-                </a>
-              </div>
+              <a
+                href={`https://wa.me/91${settings.shopPhone}?text=Hi,%20checking%20my%20tailoring%20order%20for%20mobile%20${phoneNumber}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-medium text-xs transition-colors"
+              >
+                <MessageSquare className="w-4 h-4 text-emerald-400" />
+                <span>Contact Shop on WhatsApp</span>
+              </a>
             </div>
           ) : (
             <>
-              {/* Customer Header Overview Banner */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              {/* Customer Banner */}
+              <div className="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <span className="text-xs font-semibold text-rose-600 tracking-wider uppercase">Welcome Back</span>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+                  <span className="text-[11px] font-semibold text-rose-600 tracking-wider uppercase block">
+                    Customer Account
+                  </span>
+                  <h2 className="text-xl font-bold text-stone-900">
                     {customerName}
                   </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Mobile: +91 {phoneNumber} • Total {orders.length} order{orders.length > 1 ? 's' : ''} on record
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    +91 {phoneNumber} • {orders.length} order{orders.length > 1 ? 's' : ''} on record
                   </p>
                 </div>
 
-                <div className={`px-4 py-3 rounded-2xl flex items-center gap-3 border ${
-                  totalBalanceDue > 0 ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                <div className={`px-4 py-2.5 rounded-2xl border flex items-center gap-3 ${
+                  totalBalanceDue > 0 ? 'bg-amber-50/70 border-amber-200/80 text-amber-900' : 'bg-emerald-50/70 border-emerald-200/80 text-emerald-900'
                 }`}>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg ${
-                    totalBalanceDue > 0 ? 'bg-amber-500 text-white' : 'bg-emerald-500 text-white'
-                  }`}>
-                    ₹
-                  </div>
                   <div>
-                    <span className="text-xs font-semibold block uppercase tracking-wider">
-                      {totalBalanceDue > 0 ? 'Total Balance Pending' : 'Account Status'}
+                    <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">
+                      {totalBalanceDue > 0 ? 'Total Due to Pay' : 'Account Status'}
                     </span>
                     <span className="text-lg font-extrabold">
                       {totalBalanceDue > 0 ? `₹${totalBalanceDue}` : 'All Cleared! 🎉'}
@@ -205,145 +199,110 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({ settings, onAdmi
                 </div>
               </div>
 
-              {/* Order Cards List */}
+              {/* Order Cards */}
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-slate-500 tracking-wider uppercase px-1">
-                  Your Orders & Items List
-                </h3>
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
+                    Order Details
+                  </span>
+                </div>
 
                 {orders.map((order) => (
                   <div 
                     key={order.id}
-                    className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden transition-all hover:shadow-md"
+                    className="bg-white rounded-3xl border border-stone-200/80 shadow-xs overflow-hidden"
                   >
-                    {/* Order Card Header */}
-                    <div className="p-5 sm:p-6 bg-slate-50/60 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center font-extrabold text-sm">
-                          #{order.orderNumber.replace('TK-', '')}
-                        </div>
-                        <div>
-                          <span className="font-bold text-slate-900 text-base">{order.orderNumber}</span>
-                          <span className="text-xs text-slate-500 block">
-                            Booked on {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                          </span>
-                        </div>
+                    {/* Header */}
+                    <div className="p-4 sm:p-5 bg-stone-50/60 border-b border-stone-100 flex items-center justify-between gap-3">
+                      <div>
+                        <span className="font-bold text-stone-900 text-sm">{order.orderNumber}</span>
+                        <span className="text-xs text-stone-500 block">
+                          Booked: {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
                       </div>
-
-                      <div className="flex items-center gap-2">
-                        {getStatusBadge(order.status)}
-                      </div>
+                      {getStatusBadge(order.status)}
                     </div>
 
-                    {/* Order Details Body */}
-                    <div className="p-5 sm:p-6 space-y-6">
-                      {/* Items Given / To Stitch Table */}
+                    {/* Content */}
+                    <div className="p-5 space-y-5">
+                      {/* Items */}
                       <div>
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-                          Items Given for Stitching
-                        </h4>
-                        <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 divide-y divide-slate-200/60">
+                        <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-2">
+                          Clothes for Stitching:
+                        </span>
+                        <div className="bg-stone-50 rounded-2xl p-3.5 border border-stone-200/60 space-y-2">
                           {order.items.map((item) => (
-                            <div key={item.id} className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between">
+                            <div key={item.id} className="flex justify-between items-center text-xs">
                               <div>
-                                <span className="font-semibold text-slate-900 text-sm block">
-                                  {item.description}
-                                </span>
-                                <span className="text-xs text-slate-500 font-medium">
-                                  Quantity: {item.quantity} × ₹{item.unitPrice} each
-                                </span>
+                                <span className="font-semibold text-stone-800">{item.description}</span>
+                                <span className="text-stone-400 block text-[11px]">{item.quantity} × ₹{item.unitPrice}</span>
                               </div>
-                              <span className="font-bold text-slate-900 text-sm">
-                                ₹{item.subtotal}
-                              </span>
+                              <span className="font-bold text-stone-900">₹{item.subtotal}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      {/* Due Date & Notes if available */}
+                      {/* Due Date & Notes */}
                       {(order.dueDate || order.notes) && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                           {order.dueDate && (
-                            <div className="bg-indigo-50/60 border border-indigo-100 rounded-xl p-3 flex items-center gap-2 text-indigo-900">
-                              <Calendar className="w-4 h-4 text-indigo-600 shrink-0" />
-                              <span>Ready / Delivery Target: <strong className="font-semibold">{new Date(order.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong></span>
+                            <div className="bg-stone-50 border border-stone-200/60 rounded-xl p-2.5 flex items-center gap-2 text-stone-700">
+                              <Calendar className="w-3.5 h-3.5 text-stone-500" />
+                              <span>Target Date: <strong className="font-semibold">{new Date(order.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</strong></span>
                             </div>
                           )}
                           {order.notes && (
-                            <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-3 text-slate-700">
-                              <span className="font-semibold text-slate-900 block mb-0.5">Design / Work Instructions:</span>
-                              {order.notes}
+                            <div className="bg-stone-50 border border-stone-200/60 rounded-xl p-2.5 text-stone-600 italic">
+                              "{order.notes}"
                             </div>
                           )}
                         </div>
                       )}
 
-                      {/* Payment Summary Box */}
-                      <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-inner">
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between text-slate-300">
-                            <span>Total Stitching Cost</span>
-                            <span className="font-medium text-white">₹{order.totalAmount}</span>
-                          </div>
-                          <div className="flex justify-between text-slate-300">
-                            <span>Amount Paid so far (Advance)</span>
-                            <span className="font-medium text-emerald-400">- ₹{order.amountPaid}</span>
-                          </div>
-                          <div className="pt-2 border-t border-slate-700 flex justify-between items-baseline font-bold">
-                            <span className="text-slate-100 text-base">Remaining Balance to Pay</span>
-                            <span className={`text-xl ${order.balanceDue > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
-                              ₹{order.balanceDue}
-                            </span>
-                          </div>
+                      {/* Calculation Box */}
+                      <div className="bg-stone-900 text-white rounded-2xl p-4 sm:p-5 space-y-2 text-xs sm:text-sm">
+                        <div className="flex justify-between text-stone-400">
+                          <span>Total Stitching Cost</span>
+                          <span className="font-medium text-white">₹{order.totalAmount}</span>
                         </div>
-
-                        {/* Payment History Log */}
-                        {order.paymentHistory && order.paymentHistory.length > 0 && (
-                          <div className="mt-4 pt-3 border-t border-slate-700/80">
-                            <span className="text-xs text-slate-400 uppercase font-bold tracking-wider block mb-2">
-                              Payment Records:
-                            </span>
-                            <div className="space-y-1 text-xs text-slate-300">
-                              {order.paymentHistory.map((p) => (
-                                <div key={p.id} className="flex justify-between items-center bg-white/5 px-2.5 py-1.5 rounded-lg">
-                                  <span>
-                                    {new Date(p.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} • {p.mode}
-                                    {p.notes ? ` (${p.notes})` : ''}
-                                  </span>
-                                  <span className="font-bold text-emerald-400">+₹{p.amount}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                        <div className="flex justify-between text-stone-400">
+                          <span>Amount Paid (Advance)</span>
+                          <span className="font-medium text-emerald-400">- ₹{order.amountPaid}</span>
+                        </div>
+                        <div className="pt-2 border-t border-stone-800 flex justify-between items-baseline font-bold">
+                          <span className="text-stone-200">Remaining Balance</span>
+                          <span className={`text-lg sm:text-xl font-extrabold ${order.balanceDue > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                            ₹{order.balanceDue}
+                          </span>
+                        </div>
                       </div>
 
-                      {/* Action Bar (Pay via UPI / WhatsApp Shop) */}
-                      <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                      {/* Actions */}
+                      <div className="flex flex-col sm:flex-row gap-2 pt-1">
                         {order.balanceDue > 0 ? (
                           <button
                             type="button"
                             onClick={() => setShowQrModal(order)}
-                            className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98"
+                            className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
                           >
                             <QrCode className="w-4 h-4" />
                             <span>Pay ₹{order.balanceDue} via UPI QR Code</span>
                           </button>
                         ) : (
-                          <div className="flex-1 py-3 px-4 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-center font-bold text-sm flex items-center justify-center gap-2">
+                          <div className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-center font-semibold text-xs flex items-center justify-center gap-1.5">
                             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                            <span>Payment Fully Cleared</span>
+                            <span>Full Payment Cleared</span>
                           </div>
                         )}
 
                         <a
-                          href={`https://wa.me/91${settings.shopPhone}?text=Hello%20${settings.shopName},%20regarding%20my%20order%20%23${order.orderNumber}%20(${order.customerName})`}
+                          href={`https://wa.me/91${settings.shopPhone}?text=Hi%20${encodeURIComponent(settings.shopName)},%20regarding%20my%20order%20%23${order.orderNumber}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                          className="py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
                         >
-                          <MessageSquare className="w-4 h-4 text-emerald-600" />
+                          <MessageSquare className="w-3.5 h-3.5 text-stone-600" />
                           <span>WhatsApp Shop</span>
                         </a>
                       </div>
@@ -358,72 +317,66 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({ settings, onAdmi
 
       {/* Pay via UPI Modal */}
       {showQrModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <QrCode className="w-6 h-6" />
-            </div>
-
-            <h3 className="text-xl font-bold text-slate-900">
-              Pay Balance: ₹{showQrModal.balanceDue}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-xl border border-stone-200">
+            <h3 className="text-lg font-bold text-stone-900">
+              Pay ₹{showQrModal.balanceDue}
             </h3>
-            <p className="text-xs text-slate-500 mt-1 mb-5">
-              Scan with any UPI App (GPay, PhonePe, Paytm) to clear dues for {showQrModal.orderNumber}
+            <p className="text-xs text-stone-500 mt-0.5 mb-4">
+              Scan with GPay, PhonePe, or Paytm
             </p>
 
-            {/* UPI QR Code */}
-            <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-slate-300 inline-block shadow-inner mb-4">
+            {/* QR Code */}
+            <div className="bg-stone-50 p-4 rounded-2xl border border-stone-200 inline-block mb-4">
               <QRCodeSVG
                 value={`upi://pay?pa=${settings.upiId}&pn=${encodeURIComponent(settings.shopName)}&am=${showQrModal.balanceDue}&cu=INR&tn=${encodeURIComponent(showQrModal.orderNumber)}`}
-                size={200}
+                size={180}
                 level="M"
               />
             </div>
 
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200/80 mb-5 text-left text-xs space-y-1">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Shop UPI ID:</span>
-                <span className="font-bold text-slate-900 font-mono">{settings.upiId}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Payee:</span>
-                <span className="font-semibold text-slate-900">{settings.shopName}</span>
-              </div>
+            {/* UPI ID copy pill */}
+            <div className="bg-stone-50 rounded-xl p-2.5 border border-stone-200 flex items-center justify-between mb-4 text-xs">
+              <span className="font-mono text-stone-700 truncate mr-2">{settings.upiId}</span>
+              <button
+                type="button"
+                onClick={copyUpiId}
+                className="px-2 py-1 rounded-lg bg-white border border-stone-200 hover:bg-stone-100 font-semibold text-stone-700 text-[11px] flex items-center gap-1 transition-colors"
+              >
+                {copiedUpi ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3 text-stone-500" />}
+                <span>{copiedUpi ? 'Copied' : 'Copy'}</span>
+              </button>
             </div>
 
             <div className="space-y-2">
               <a
                 href={`upi://pay?pa=${settings.upiId}&pn=${encodeURIComponent(settings.shopName)}&am=${showQrModal.balanceDue}&cu=INR&tn=${encodeURIComponent(showQrModal.orderNumber)}`}
-                className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm block transition-colors"
+                className="w-full py-2.5 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs block transition-colors"
               >
-                Open in UPI App (GPay / PhonePe)
+                Open UPI App on Phone
               </a>
               <button
                 type="button"
                 onClick={() => setShowQrModal(null)}
-                className="w-full py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900"
+                className="w-full py-2 text-xs font-semibold text-stone-500 hover:text-stone-800"
               >
-                Close
+                Cancel
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Footer Info & Admin Link */}
-      <div className="mt-12 text-center text-xs text-slate-400 space-y-2">
-        <p>
-          Need to book a new order or update measurements? Visit {settings.shopName} or call +91 {settings.shopPhone}.
-        </p>
-        <div>
-          <button 
-            type="button"
-            onClick={onAdminLoginClick}
-            className="text-slate-500 hover:text-rose-600 font-medium underline cursor-pointer"
-          >
-            Shop Owner / Tailor Login
-          </button>
-        </div>
+      {/* Footer */}
+      <div className="mt-12 text-center text-xs text-stone-400 space-y-1">
+        <p>{settings.shopName} • Mobile: +91 {settings.shopPhone}</p>
+        <button 
+          type="button"
+          onClick={onAdminLoginClick}
+          className="text-stone-500 hover:text-stone-800 font-medium underline cursor-pointer"
+        >
+          Shop Owner Login
+        </button>
       </div>
     </div>
   );

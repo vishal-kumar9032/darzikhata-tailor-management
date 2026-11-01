@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Users, 
   Search, 
   Phone, 
   Ruler, 
-  Calendar, 
   Plus, 
   Edit3, 
-  ChevronRight,
-  BookOpen,
-  Check,
-  X
+  BookOpen, 
+  Check 
 } from 'lucide-react';
 import { CustomerProfile, MeasurementProfile, OrderRecord } from '../types';
 import { StorageService } from '../services/storageService';
@@ -70,7 +66,6 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
     }
   };
 
-  // Get orders belonging to this customer
   const customerOrders = selectedCustomer 
     ? orders.filter(o => o.customerPhone.replace(/\D/g, '').slice(-10) === selectedCustomer.phone)
     : [];
@@ -79,38 +74,38 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-rose-600" />
+          <h2 className="text-xl sm:text-2xl font-bold text-stone-900 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-stone-700" />
             <span>Digital Measurement Book (Khata)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Never lose customer sizes. Saved measurements automatically attach to their future orders.
+          <p className="text-xs sm:text-sm text-stone-500">
+            Saved measurements automatically attach to all future orders.
           </p>
         </div>
 
         {/* Search */}
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 absolute inset-y-0 left-3 my-auto text-slate-400 pointer-events-none" />
+          <Search className="w-4 h-4 absolute inset-y-0 left-3 my-auto text-stone-400 pointer-events-none" />
           <input
             type="text"
             placeholder="Search name or mobile..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500 shadow-xs"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-stone-200 text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-900 shadow-2xs"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Customer List */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-4 shadow-xs space-y-2 max-h-[600px] overflow-y-auto">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
+        <div className="bg-white rounded-2xl border border-stone-200/80 p-3.5 shadow-xs space-y-1.5 max-h-[600px] overflow-y-auto">
+          <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wider px-2 py-1">
             Registered Customers ({filteredCustomers.length})
           </div>
 
           {filteredCustomers.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-400">
-              No customer profiles found.
+            <div className="p-8 text-center text-xs text-stone-400">
+              No customer records saved yet.
             </div>
           ) : (
             filteredCustomers.map((cust) => {
@@ -120,26 +115,22 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
                 <div
                   key={cust.phone}
                   onClick={() => { setSelectedCustomer(cust); setEditingMeasurements(null); }}
-                  className={`p-3.5 rounded-2xl cursor-pointer transition-all border ${
+                  className={`p-3 rounded-xl cursor-pointer transition-all border ${
                     isSelected
-                      ? 'bg-rose-50 border-rose-300 shadow-xs'
-                      : 'hover:bg-slate-50 border-transparent'
+                      ? 'bg-stone-100 border-stone-300 shadow-2xs'
+                      : 'hover:bg-stone-50 border-transparent'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-bold text-slate-900 text-sm">{cust.name}</h4>
-                      <p className="text-xs text-slate-500 font-medium">+91 {cust.phone}</p>
+                      <h4 className="font-bold text-stone-900 text-xs sm:text-sm">{cust.name}</h4>
+                      <p className="text-[11px] text-stone-500">+91 {cust.phone}</p>
                     </div>
-                    <div className="text-right">
-                      {hasMeasurements ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                          <Ruler className="w-3 h-3" /> Sizes Saved
-                        </span>
-                      ) : (
-                        <span className="text-[11px] text-slate-400">No sizes yet</span>
-                      )}
-                    </div>
+                    {hasMeasurements && (
+                      <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        Saved
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -150,13 +141,13 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
         {/* Right Column: Customer Details & Measurement Card */}
         <div className="lg:col-span-2 space-y-6">
           {selectedCustomer ? (
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-6">
+            <div className="bg-white rounded-2xl border border-stone-200/80 p-5 sm:p-6 shadow-xs space-y-5">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-100">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900">{selectedCustomer.name}</h3>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                    <span className="font-semibold text-slate-700">+91 {selectedCustomer.phone}</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-stone-900">{selectedCustomer.name}</h3>
+                  <div className="flex items-center gap-2 text-xs text-stone-500 mt-0.5">
+                    <span>+91 {selectedCustomer.phone}</span>
                     <span>•</span>
                     <span>Customer since {new Date(selectedCustomer.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</span>
                   </div>
@@ -165,27 +156,27 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
                 <div className="flex items-center gap-2">
                   <a
                     href={`tel:${selectedCustomer.phone}`}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1 transition-colors"
+                    className="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1 transition-colors"
                   >
-                    <Phone className="w-3.5 h-3.5" />
+                    <Phone className="w-3 h-3" />
                     <span>Call</span>
                   </a>
                   <button
                     type="button"
                     onClick={() => onSelectCustomerForNewOrder(selectedCustomer.phone, selectedCustomer.name)}
-                    className="px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>New Order for {selectedCustomer.name.split(' ')[0]}</span>
+                    <span>New Order</span>
                   </button>
                 </div>
               </div>
 
               {/* Measurements Card */}
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 space-y-4">
+              <div className="bg-stone-50 rounded-xl p-4 border border-stone-200/70 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <Ruler className="w-4 h-4 text-rose-600" />
+                  <span className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Ruler className="w-3.5 h-3.5 text-stone-600" />
                     Saved Body Measurements (Inches)
                   </span>
 
@@ -193,17 +184,17 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
                     <button
                       type="button"
                       onClick={() => setEditingMeasurements(selectedCustomer.measurements || {})}
-                      className="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-semibold text-stone-700 hover:text-stone-900 flex items-center gap-1 cursor-pointer"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
-                      <span>Edit Measurements</span>
+                      <span>Edit Sizes</span>
                     </button>
                   ) : (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => setEditingMeasurements(null)}
-                        className="px-2.5 py-1 rounded-lg border border-slate-300 text-xs text-slate-600 hover:bg-slate-200"
+                        className="px-2.5 py-1 rounded-lg border border-stone-300 text-xs text-stone-600 hover:bg-stone-200"
                       >
                         Cancel
                       </button>
@@ -211,7 +202,7 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
                         type="button"
                         onClick={handleSaveMeasurements}
                         disabled={isSaving}
-                        className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1"
+                        className="px-3 py-1 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs flex items-center gap-1"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Save</span>
@@ -221,9 +212,8 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
                 </div>
 
                 {editingMeasurements ? (
-                  /* Edit Mode Inputs */
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="space-y-3 pt-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
                       {[
                         { key: 'blouseLength', label: 'Blouse Length' },
                         { key: 'chest', label: 'Chest' },
@@ -235,32 +225,31 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
                         { key: 'neckBack', label: 'Neck Back' },
                       ].map((field) => (
                         <div key={field.key}>
-                          <label className="text-slate-600 font-semibold block mb-1">{field.label}:</label>
+                          <label className="text-stone-600 font-medium block mb-0.5 text-[11px]">{field.label}:</label>
                           <input
                             type="text"
                             placeholder="e.g. 14"
                             value={(editingMeasurements as any)[field.key] || ''}
                             onChange={(e) => setEditingMeasurements({ ...editingMeasurements, [field.key]: e.target.value })}
-                            className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white font-bold text-slate-900"
+                            className="w-full px-2 py-1 rounded-lg border border-stone-200 bg-white font-semibold text-stone-900 text-xs"
                           />
                         </div>
                       ))}
                     </div>
                     <div>
-                      <label className="text-xs text-slate-600 font-semibold block mb-1">Fitting & Design Preferences:</label>
+                      <label className="text-[11px] text-stone-600 font-medium block mb-0.5">Notes:</label>
                       <input
                         type="text"
-                        placeholder="e.g. Princess cut, boat neck, loves latkan dori"
+                        placeholder="Princess cut, boat neck"
                         value={editingMeasurements.customNotes || ''}
                         onChange={(e) => setEditingMeasurements({ ...editingMeasurements, customNotes: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs"
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 bg-white text-xs"
                       />
                     </div>
                   </div>
                 ) : (
-                  /* Display Mode Grid */
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="space-y-3 pt-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {[
                         { label: 'Blouse Length', val: selectedCustomer.measurements?.blouseLength },
                         { label: 'Chest', val: selectedCustomer.measurements?.chest },
@@ -271,9 +260,9 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
                         { label: 'Neck Front', val: selectedCustomer.measurements?.neckFront },
                         { label: 'Neck Back', val: selectedCustomer.measurements?.neckBack },
                       ].map((item, idx) => (
-                        <div key={idx} className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs">
-                          <span className="text-[10px] uppercase font-bold text-slate-400 block">{item.label}</span>
-                          <span className="text-base font-extrabold text-slate-900 mt-0.5 block">
+                        <div key={idx} className="bg-white p-2.5 rounded-xl border border-stone-200/60 text-xs">
+                          <span className="text-[10px] uppercase font-bold text-stone-400 block">{item.label}</span>
+                          <span className="text-sm font-bold text-stone-900 mt-0.5 block">
                             {item.val ? `${item.val}"` : '—'}
                           </span>
                         </div>
@@ -281,35 +270,35 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
                     </div>
 
                     {selectedCustomer.measurements?.customNotes && (
-                      <div className="bg-amber-50 rounded-xl p-3 border border-amber-200/60 text-xs text-amber-900">
-                        <strong className="font-bold">Preferences:</strong> {selectedCustomer.measurements.customNotes}
+                      <div className="bg-white rounded-xl p-2.5 border border-stone-200/60 text-xs text-stone-700">
+                        <strong className="font-semibold text-stone-900">Notes:</strong> {selectedCustomer.measurements.customNotes}
                       </div>
                     )}
                   </div>
                 )}
               </div>
 
-              {/* Order History for this customer */}
+              {/* Order History */}
               <div>
-                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-                  Previous Stitching Orders ({customerOrders.length})
+                <h4 className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2.5">
+                  Previous Orders ({customerOrders.length})
                 </h4>
 
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {customerOrders.length === 0 ? (
-                    <p className="text-xs text-slate-400 italic">No orders found for this customer.</p>
+                    <p className="text-xs text-stone-400 italic">No orders yet.</p>
                   ) : (
                     customerOrders.map((o) => (
-                      <div key={o.id} className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+                      <div key={o.id} className="p-3 bg-stone-50 rounded-xl border border-stone-200/60 flex items-center justify-between text-xs">
                         <div>
-                          <span className="font-bold text-slate-900 block">{o.orderNumber} • {o.items.map(i => i.description).join(', ')}</span>
-                          <span className="text-slate-400">
+                          <span className="font-semibold text-stone-900 block">{o.orderNumber} • {o.items.map(i => i.description).join(', ')}</span>
+                          <span className="text-stone-400 text-[11px]">
                             {new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                           </span>
                         </div>
                         <div className="text-right">
-                          <span className="font-bold text-slate-900 block">Total: ₹{o.totalAmount}</span>
-                          <span className={o.balanceDue > 0 ? 'text-amber-600 font-bold' : 'text-emerald-600 font-bold'}>
+                          <span className="font-bold text-stone-900 block">₹{o.totalAmount}</span>
+                          <span className={o.balanceDue > 0 ? 'text-amber-700 font-medium' : 'text-emerald-700 font-medium'}>
                             {o.balanceDue > 0 ? `Pending: ₹${o.balanceDue}` : 'Cleared ✅'}
                           </span>
                         </div>
@@ -320,8 +309,8 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center text-slate-400">
-              Select a customer from the left list to view their measurements and order history.
+            <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center text-xs text-stone-400">
+              Select a customer from the left to view their measurements and order history.
             </div>
           )}
         </div>

@@ -5,8 +5,6 @@ import {
   MessageSquare, 
   CreditCard, 
   CheckCircle2, 
-  Clock,
-  Sparkles,
   ArrowUpDown
 } from 'lucide-react';
 import { OrderRecord, ShopSettings } from '../types';
@@ -23,36 +21,35 @@ export const UdharRegister: React.FC<UdharRegisterProps> = ({
   settings,
   onCollectPayment,
 }) => {
-  // Filter all orders with balanceDue > 0
   const pendingOrders = orders
     .filter(o => o.balanceDue > 0)
-    .sort((a, b) => b.balanceDue - a.balanceDue); // Highest balance first
+    .sort((a, b) => b.balanceDue - a.balanceDue);
 
   const totalPendingDues = pendingOrders.reduce((sum, o) => sum + o.balanceDue, 0);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* Banner */}
-      <div className="bg-gradient-to-r from-rose-700 via-rose-800 to-amber-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+      {/* Clean Banner */}
+      <div className="bg-stone-900 rounded-2xl p-6 sm:p-7 text-white shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-xs font-semibold text-rose-100 border border-white/20 mb-3">
-              <AlertCircle className="w-3.5 h-3.5" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-stone-800 text-[11px] font-semibold text-rose-300 mb-2 border border-stone-700">
+              <AlertCircle className="w-3 h-3" />
               <span>Pending Dues Ledger (Udhar Khata)</span>
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Total Baqaya: ₹{totalPendingDues}
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              Total Pending: ₹{totalPendingDues}
             </h2>
-            <p className="text-rose-100 text-xs sm:text-sm mt-1 max-w-md opacity-90">
-              {pendingOrders.length} order{pendingOrders.length > 1 ? 's have' : ' has'} pending balances to be collected.
+            <p className="text-stone-400 text-xs sm:text-sm mt-0.5">
+              {pendingOrders.length} customer order{pendingOrders.length > 1 ? 's' : ''} with pending balance.
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center sm:text-right">
-            <span className="text-xs text-rose-200 block uppercase font-bold tracking-wider">
-              Shop UPI for Payment
+          <div className="bg-stone-800/80 rounded-xl p-3 border border-stone-700 text-left sm:text-right">
+            <span className="text-[10px] text-stone-400 block uppercase font-bold tracking-wider">
+              Shop UPI ID
             </span>
-            <span className="text-base sm:text-lg font-black text-white font-mono">
+            <span className="text-sm sm:text-base font-bold text-stone-200 font-mono">
               {settings.upiId}
             </span>
           </div>
@@ -60,94 +57,88 @@ export const UdharRegister: React.FC<UdharRegisterProps> = ({
       </div>
 
       {/* Customer List */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1 text-xs">
+          <span className="font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1">
             <ArrowUpDown className="w-3.5 h-3.5" />
-            Sorted by Highest Pending Amount
+            Highest Pending First
           </span>
-          <span className="text-xs font-semibold text-slate-500">
-            {pendingOrders.length} Customers Due
+          <span className="text-stone-400">
+            {pendingOrders.length} Customers
           </span>
         </div>
 
         {pendingOrders.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-xs">
-            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
-              <CheckCircle2 className="w-8 h-8" />
+          <div className="bg-white rounded-2xl p-12 text-center border border-stone-200/80 shadow-xs">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900">Sabhi Hisaab Clear Hai! 🎉</h3>
-            <p className="text-slate-500 text-xs max-w-sm mx-auto mt-1">
-              There are currently no pending payments. All completed or active orders have cleared their dues.
+            <h3 className="text-base font-bold text-stone-900">All Cleared! 🎉</h3>
+            <p className="text-stone-500 text-xs mt-0.5">
+              There are no pending dues at the moment.
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {pendingOrders.map((order) => (
               <div 
                 key={order.id}
-                className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-rose-300"
+                className="bg-white rounded-2xl p-4 sm:p-4.5 border border-stone-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 transition-colors hover:border-stone-300"
               >
-                {/* Customer & Order details */}
-                <div className="space-y-1">
+                {/* Details */}
+                <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-slate-900 text-base">{order.customerName}</h3>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                    <h3 className="font-bold text-stone-900 text-sm sm:text-base">{order.customerName}</h3>
+                    <span className="font-mono text-stone-400 text-xs">
                       {order.orderNumber}
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      • {order.status === 'delivered' ? 'Delivered' : 'In Shop'}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-500">
-                    Clothes: {order.items.map(i => `${i.quantity}x ${i.description}`).join(', ')}
+                  <p className="text-xs text-stone-500">
+                    {order.items.map(i => `${i.quantity}× ${i.description}`).join(', ')}
                   </p>
 
-                  <div className="flex items-center gap-3 text-xs text-slate-500 pt-0.5">
+                  <div className="flex items-center gap-2 text-[11px] text-stone-400 pt-0.5">
                     <span>Total: ₹{order.totalAmount}</span>
                     <span>•</span>
-                    <span className="text-emerald-600 font-semibold">Advance Paid: ₹{order.amountPaid}</span>
+                    <span className="text-emerald-700 font-medium">Paid: ₹{order.amountPaid}</span>
                   </div>
                 </div>
 
-                {/* Balance Amount & Actions */}
-                <div className="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                  <div className="text-left sm:text-right mr-2">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Pending Balance</span>
-                    <span className="text-xl font-black text-rose-600">
+                {/* Balance & Actions */}
+                <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-100">
+                  <div className="text-left sm:text-right mr-1">
+                    <span className="text-[10px] uppercase font-bold text-stone-400 block">Pending</span>
+                    <span className="text-base sm:text-lg font-bold text-stone-900">
                       ₹{order.balanceDue}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    {/* Call */}
                     <a
                       href={`tel:${order.customerPhone}`}
-                      className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                      title="Call Customer"
+                      className="p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors"
+                      title="Call"
                     >
-                      <Phone className="w-4 h-4" />
+                      <Phone className="w-3.5 h-3.5" />
                     </a>
 
-                    {/* WhatsApp Reminder */}
                     <button
                       type="button"
                       onClick={() => WhatsAppService.sendPaymentReminder(order, settings)}
-                      className="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="px-2.5 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                       title="Send WhatsApp payment reminder"
                     >
                       <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="hidden sm:inline">Remind on WhatsApp</span>
+                      <span className="hidden sm:inline">Remind</span>
                     </button>
 
-                    {/* Collect Payment */}
                     <button
                       type="button"
                       onClick={() => onCollectPayment(order)}
-                      className="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs cursor-pointer active:scale-95 transition-all"
+                      className="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
                     >
-                      <CreditCard className="w-3.5 h-3.5" />
+                      <CreditCard className="w-3 h-3 text-stone-300" />
                       <span>Collect</span>
                     </button>
                   </div>

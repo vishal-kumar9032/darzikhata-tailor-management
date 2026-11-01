@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check, CreditCard, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Check, CreditCard } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { OrderRecord, PaymentMode, ShopSettings } from '../types';
 import { StorageService } from '../services/storageService';
@@ -15,13 +15,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   order,
   onClose,
   onPaymentSuccess,
-  settings,
 }) => {
   if (!order) return null;
 
   const [amount, setAmount] = useState<number>(order.balanceDue);
   const [mode, setMode] = useState<PaymentMode>('Cash');
-  const [notes, setNotes] = useState<string>('Balance paid at pickup');
+  const [notes, setNotes] = useState<string>('Balance cleared');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,11 +40,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       });
 
       if (updated) {
-        // Trigger celebratory confetti if balance fully cleared!
         if (updated.balanceDue === 0) {
           confetti({
-            particleCount: 80,
-            spread: 60,
+            particleCount: 70,
+            spread: 50,
             origin: { y: 0.7 },
           });
         }
@@ -61,38 +59,38 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-      <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
+      <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150">
+        <div className="flex items-center justify-between pb-3 border-b border-stone-100">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-              <CreditCard className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-xl bg-stone-100 text-stone-700 flex items-center justify-center">
+              <CreditCard className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Record Payment</h3>
-              <p className="text-xs text-slate-500">Order #{order.orderNumber} • {order.customerName}</p>
+              <h3 className="text-sm font-bold text-stone-900">Record Payment</h3>
+              <p className="text-[11px] text-stone-500">{order.orderNumber} • {order.customerName}</p>
             </div>
           </div>
           <button 
             type="button" 
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+            className="p-1 text-stone-400 hover:text-stone-600 rounded-lg"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          {/* Due Info Banner */}
-          <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200/80 flex items-center justify-between">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
+          {/* Due Info */}
+          <div className="bg-stone-50 rounded-2xl p-3.5 border border-stone-200/80 flex items-center justify-between">
             <div>
-              <span className="text-xs text-amber-800 font-semibold uppercase block">Current Pending Balance</span>
-              <span className="text-2xl font-black text-amber-900">₹{order.balanceDue}</span>
+              <span className="text-[10px] text-stone-400 font-bold uppercase tracking-wider block">Pending Balance</span>
+              <span className="text-xl font-bold text-stone-900">₹{order.balanceDue}</span>
             </div>
             <button
               type="button"
               onClick={() => setAmount(order.balanceDue)}
-              className="px-3 py-1.5 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs transition-colors"
+              className="px-2.5 py-1 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold text-xs transition-colors"
             >
               Clear Full
             </button>
@@ -100,11 +98,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Amount Input */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-bold text-stone-600 uppercase tracking-wider mb-1">
               Amount Received (₹) *
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-base font-bold text-slate-400">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-sm font-bold text-stone-400">
                 ₹
               </span>
               <input
@@ -114,26 +112,26 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 required
                 value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-300 font-extrabold text-slate-900 text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full pl-8 pr-3 py-2 rounded-xl border border-stone-200 font-bold text-stone-900 text-base focus:outline-none focus:ring-1 focus:ring-stone-900 bg-stone-50 focus:bg-white"
               />
             </div>
           </div>
 
-          {/* Payment Mode */}
+          {/* Mode */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-bold text-stone-600 uppercase tracking-wider mb-1">
               Payment Mode
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 text-xs">
               {(['Cash', 'UPI / Online'] as PaymentMode[]).map((m) => (
                 <button
                   key={m}
                   type="button"
                   onClick={() => setMode(m)}
-                  className={`py-2 rounded-xl text-xs font-bold border transition-colors ${
+                  className={`py-1.5 rounded-xl font-semibold border transition-colors ${
                     mode === m
-                      ? 'bg-emerald-600 text-white border-emerald-600'
-                      : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                      ? 'bg-stone-900 text-white border-stone-900'
+                      : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
                   }`}
                 >
                   {m}
@@ -144,34 +142,34 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-bold text-stone-600 uppercase tracking-wider mb-1">
               Note (Optional)
             </label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g. Paid via GPay upon trial"
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs text-slate-800"
+              placeholder="e.g. Paid in cash at shop"
+              className="w-full px-3 py-1.5 rounded-xl border border-stone-200 text-xs text-stone-800 bg-stone-50"
             />
           </div>
 
-          {/* Action buttons */}
+          {/* Actions */}
           <div className="pt-2 flex gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-50"
+              className="flex-1 py-2 rounded-xl text-stone-600 font-semibold text-xs hover:bg-stone-100"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || amount <= 0}
-              className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+              className="flex-1 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-all disabled:opacity-40 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
             >
-              <Check className="w-4 h-4" />
-              <span>{isSubmitting ? 'Recording...' : 'Save Payment'}</span>
+              <Check className="w-3.5 h-3.5" />
+              <span>{isSubmitting ? 'Saving...' : 'Save Payment'}</span>
             </button>
           </div>
         </form>

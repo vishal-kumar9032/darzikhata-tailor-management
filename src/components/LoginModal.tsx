@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { 
   X, 
-  LogIn, 
   ShieldCheck, 
-  Lock, 
-  Mail, 
-  Sparkles, 
-  ArrowRight,
   AlertCircle,
   Users
 } from 'lucide-react';
@@ -16,7 +11,6 @@ import {
   loginWithEmail, 
   setLocalAdminSession,
   isEmailAuthorized,
-  ALLOWED_ADMIN_EMAILS
 } from '../services/firebase';
 
 interface LoginModalProps {
@@ -48,7 +42,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           onClose();
         }
       } else {
-        // Fallback authorized admin
         setLocalAdminSession('ashadevi903237@gmail.com');
         onLoginSuccess('ashadevi903237@gmail.com');
         onClose();
@@ -67,7 +60,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setError('');
     try {
       if (!isEmailAuthorized(email)) {
-        throw new Error(`Access Denied: ${email} is not authorized. Only vishalkumar9032374977@gmail.com, ashadevi903237@gmail.com, and anjalikumari903237@gmail.com can log in.`);
+        throw new Error(`Access Denied: ${email} is not authorized.`);
       }
 
       if (isFirebaseConfigured) {
@@ -96,54 +89,54 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-      <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
+      <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150">
+        <div className="flex items-center justify-between pb-3 border-b border-stone-100">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5 text-rose-400" />
+            <div className="w-8 h-8 rounded-xl bg-stone-900 text-white flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-rose-400" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Tailor Admin Access</h3>
-              <p className="text-[11px] text-slate-500">Restricted Single Sign-In</p>
+              <h3 className="text-sm font-bold text-stone-900">Tailor Admin Access</h3>
+              <p className="text-[11px] text-stone-500">Authorized Single Sign-In</p>
             </div>
           </div>
           <button 
             type="button" 
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+            className="p-1 text-stone-400 hover:text-stone-600 rounded-lg"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Authorized Admins Badge */}
-        <div className="mt-4 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 text-xs space-y-1">
-          <div className="flex items-center gap-1.5 font-bold text-slate-900">
-            <Users className="w-3.5 h-3.5 text-rose-600" />
-            <span>Authorized Admin Accounts:</span>
+        <div className="mt-3.5 p-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-700 text-xs space-y-1">
+          <div className="flex items-center gap-1.5 font-semibold text-stone-900 text-[11px]">
+            <Users className="w-3.5 h-3.5 text-stone-500" />
+            <span>Allowed Accounts:</span>
           </div>
-          <ul className="text-[11px] text-slate-600 space-y-0.5 list-disc list-inside">
-            <li className="font-medium">ashadevi903237@gmail.com</li>
-            <li className="font-medium">anjalikumari903237@gmail.com</li>
-            <li className="font-medium">vishalkumar9032374977@gmail.com</li>
+          <ul className="text-[11px] text-stone-500 space-y-0.5 list-disc list-inside">
+            <li>ashadevi903237@gmail.com</li>
+            <li>anjalikumari903237@gmail.com</li>
+            <li>vishalkumar9032374977@gmail.com</li>
           </ul>
         </div>
 
         {error && (
-          <div className="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <div className="mt-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
+            <span className="text-[11px]">{error}</span>
           </div>
         )}
 
-        <div className="mt-5 space-y-4">
+        <div className="mt-4 space-y-3.5">
           {/* Google Sign-in button */}
           <button
             type="button"
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full py-3 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center gap-3 transition-colors shadow-2xs cursor-pointer"
+            className="w-full py-2.5 px-3.5 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-800 font-semibold text-xs flex items-center justify-center gap-2.5 transition-colors shadow-2xs cursor-pointer"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -166,20 +159,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             <span>Sign In with Google</span>
           </button>
 
-          <div className="relative flex items-center justify-center text-xs text-slate-400">
-            <span className="bg-white px-2 z-10 font-medium">or Email Login</span>
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
+          <div className="relative flex items-center justify-center text-[11px] text-stone-400">
+            <span className="bg-white px-2 z-10">or email</span>
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-stone-200" /></div>
           </div>
 
           {/* Email / Password Form */}
-          <form onSubmit={handleEmailLogin} className="space-y-3">
+          <form onSubmit={handleEmailLogin} className="space-y-2.5">
             <div>
               <input
                 type="email"
-                placeholder="Authorized Admin Email"
+                placeholder="Admin Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-medium"
+                className="w-full px-3 py-1.5 rounded-xl border border-stone-200 text-xs bg-stone-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-stone-900"
               />
             </div>
             <div>
@@ -188,47 +181,47 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-medium"
+                className="w-full px-3 py-1.5 rounded-xl border border-stone-200 text-xs bg-stone-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-stone-900"
               />
             </div>
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shadow-xs"
+              className="w-full py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors shadow-2xs"
             >
-              Sign In as Admin
+              Sign In
             </button>
           </form>
 
           {/* 1-Tap Quick Authorized Admin buttons */}
-          <div className="pt-2 border-t border-slate-100 space-y-1.5 text-center">
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
-              1-Tap Fast Login for Admins:
+          <div className="pt-2 border-t border-stone-100 space-y-1.5 text-center">
+            <span className="text-[10px] text-stone-400 font-bold uppercase tracking-wider block">
+              1-Tap Fast Login for Owners:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
               <button
                 type="button"
                 onClick={() => handleSelectAuthorizedAdmin('ashadevi903237@gmail.com')}
-                className="py-1.5 px-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] truncate border border-rose-200"
+                className="py-1.5 px-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-[11px] truncate border border-stone-200"
                 title="Asha Devi"
               >
-                👩‍💼 Asha Devi
+                Asha Devi
               </button>
               <button
                 type="button"
                 onClick={() => handleSelectAuthorizedAdmin('anjalikumari903237@gmail.com')}
-                className="py-1.5 px-2 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-800 font-bold text-[11px] truncate border border-pink-200"
+                className="py-1.5 px-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-[11px] truncate border border-stone-200"
                 title="Anjali Kumari"
               >
-                👩‍💼 Anjali Kumari
+                Anjali Kumari
               </button>
               <button
                 type="button"
                 onClick={() => handleSelectAuthorizedAdmin('vishalkumar9032374977@gmail.com')}
-                className="py-1.5 px-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-bold text-[11px] truncate border border-indigo-200"
+                className="py-1.5 px-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-[11px] truncate border border-stone-200"
                 title="Vishal Kumar"
               >
-                👨‍💼 Vishal Kumar
+                Vishal Kumar
               </button>
             </div>
           </div>
